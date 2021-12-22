@@ -1,18 +1,49 @@
 import Task from "./Task";
-import Completed from "./Completed";
 import "./File.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const File = (props) => {
-  const today = new Date();
   const initialTasks = [
-    { content: "First", id: 1, createdDate: Date.now() },
-    { content: "Second", id: 2, createdDate: Date.now() },
+    {
+      content: "First",
+      id: 1,
+      createdDate: Date.now(),
+      completed: false,
+      dueDate: Date.now(),
+    },
+    {
+      content: "Second",
+      id: 2,
+      createdDate: Date.now(),
+      completed: true,
+      dueDate: Date.now(),
+    },
+    {
+      content: "Third",
+      id: 3,
+      createdDate: Date.now(),
+      completed: true,
+      dueDate: Date.now(),
+    },
   ];
 
   const [tasks, setTasks] = useState(initialTasks);
   const [onTypeTask, setOnTypeTask] = useState("");
+  const [unCompleted, setUnCompleted] = useState(
+    tasks.filter((task) => task.completed === false)
+  );
+  const [completed, setCompleted] = useState(
+    tasks.filter((task) => task.completed === true)
+  );
 
+  useEffect(() => {
+    console.log("tasks updated!");
+    setUnCompleted(tasks.filter((task) => task.completed === false));
+    setCompleted(tasks.filter((task) => task.completed === true));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tasks]);
+
+  // File Level Event Handlers
   const handleInputChange = (e) => {
     setOnTypeTask(e.target.value);
   };
@@ -20,20 +51,41 @@ const File = (props) => {
   const handleAdd = (e) => {
     e.preventDefault();
     if (onTypeTask) {
-      const addedTask = { content: onTypeTask, id: tasks.length + 1 };
+      const id = Math.floor(Math.random() * 100);
+      const addedTask = { content: onTypeTask, id: id, completed: false };
       setTasks(tasks.concat(addedTask));
       setOnTypeTask("");
     }
+    console.log(tasks);
   };
 
+  // Task Level Event Handlers
   const handleDelete = (e) => {
     const removedId = e.target.id;
+    // Handle for Completed and UnCompleted Tasks cases
     const newTasks = tasks.filter((task) => task.id !== +removedId);
     setTasks(newTasks);
   };
 
+  const handleCheck = (e) => {
+    const updatedTasks = [...tasks];
+    const checkedTask = updatedTasks.filter(
+      (task) => task.id === +e.target.id
+    )[0];
+
+    // Change the value of completed
+    checkedTask.completed = !checkedTask.completed;
+    setTasks(updatedTasks);
+  };
+
+  const taskMethod = {
+    handleDelete: handleDelete,
+    handleCheck: handleCheck,
+  };
+
   return (
     <div className="fileMainPage">
+      <h1>[Folder Name]</h1>
       <form>
         <input
           placeholder="Enter the task ..."
@@ -45,13 +97,20 @@ const File = (props) => {
       {/* Task Container */}
       <div className="taskContainer">
         <ul>
-          {tasks.map((task) => (
-            <Task task={task} handleDelete={handleDelete} />
+          {unCompleted.map((task) => (
+            <Task key={task.id} task={task} method={taskMethod} />
           ))}
         </ul>
       </div>
       {/* Completed Task */}
-      <Completed />
+      <h2>Completed</h2>
+      <div className="taskContainer">
+        <ul>
+          {completed.map((task) => (
+            <Task key={task.id} task={task} method={taskMethod} />
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

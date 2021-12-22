@@ -2,12 +2,12 @@ import "./Task.css";
 
 const Task = (props) => {
   const { content, id } = props.task;
-  const { handleDelete } = props;
+  const { handleDelete, handleCheck } = props.method;
   return (
     <li>
-      <input type="checkbox" />
+      <input type="checkbox" id={id} onChange={handleCheck} />
       <p className="note content">{content}</p>
-      <button className="note" onClick={handleDelete} id={id}>
+      <button className="note" id={id} onClick={handleDelete}>
         Remove
       </button>
     </li>
