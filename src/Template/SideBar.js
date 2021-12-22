@@ -1,13 +1,18 @@
 import { useState } from "react";
 
 const SideBar = (props) => {
+  const { folders } = props;
+  console.log(folders);
   // Use state effect here to fetch the list of folders
   return (
     <div>
       <p>List of Projects</p>
       <ul>
-        <li>Personal</li>
-        <li>Phonebook</li>
+        {folders.map((folder) => (
+          <li key={folder.id}>
+            {folder.name} - {folder.id}
+          </li>
+        ))}
       </ul>
     </div>
   );

@@ -1,5 +1,5 @@
 import "./Task.css";
-
+// import Editable from "./Editable";
 const Task = (props) => {
   const { content, id } = props.task;
   const { handleDelete, handleCheck } = props.method;
@@ -7,7 +7,10 @@ const Task = (props) => {
     <li>
       <input type="checkbox" id={id} onChange={handleCheck} />
       <p className="note content">{content}</p>
-      <button className="note" id={id} onClick={handleDelete}>
+      {/* <Editable> */}
+      {/* </Editable> */}
+      <button className="note inline-btn">Edit</button>
+      <button className="note inline-btn" id={id} onClick={handleDelete}>
         Remove
       </button>
     </li>

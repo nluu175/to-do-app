@@ -1,9 +1,12 @@
-.note {
-  display: inline;
-}
-
 .content {
   margin-right: 20px;
   padding-right: 20px;
   border: 0px;
+}
+.note {
+  display: inline;
+}
+
+.inline-btn {
+  padding-right: 10px;
 }

@@ -1,6 +1,7 @@
 import Task from "./Task";
 import "./File.css";
 import { useState, useEffect } from "react";
+import Editable from "./Editable";
 
 const File = (props) => {
   const initialTasks = [
@@ -29,12 +30,8 @@ const File = (props) => {
 
   const [tasks, setTasks] = useState(initialTasks);
   const [onTypeTask, setOnTypeTask] = useState("");
-  const [unCompleted, setUnCompleted] = useState(
-    tasks.filter((task) => task.completed === false)
-  );
-  const [completed, setCompleted] = useState(
-    tasks.filter((task) => task.completed === true)
-  );
+  const [unCompleted, setUnCompleted] = useState([]);
+  const [completed, setCompleted] = useState([]);
 
   useEffect(() => {
     console.log("tasks updated!");
@@ -87,11 +84,13 @@ const File = (props) => {
     <div className="fileMainPage">
       <h1>[Folder Name]</h1>
       <form>
-        <input
-          placeholder="Enter the task ..."
-          value={onTypeTask}
-          onChange={handleInputChange}
-        />
+        <Editable placeholder="Enter a date">
+          <input
+            placeholder="Enter the task ..."
+            value={onTypeTask}
+            onChange={handleInputChange}
+          />
+        </Editable>
         <button onClick={handleAdd}>Add</button>
       </form>
       {/* Task Container */}
