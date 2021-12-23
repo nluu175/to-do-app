@@ -1,7 +1,6 @@
 import Task from "./Task";
 import "./File.css";
 import { useState, useEffect } from "react";
-import Editable from "./Editable";
 
 const File = (props) => {
   const initialTasks = [
@@ -33,12 +32,15 @@ const File = (props) => {
   const [unCompleted, setUnCompleted] = useState([]);
   const [completed, setCompleted] = useState([]);
 
+  // Use to control whether to update Completed List
+  const [updatedCheck, setUpdatedCheck] = useState(true);
+
   useEffect(() => {
-    console.log("tasks updated!");
+    console.log("Tasks updated!");
     setUnCompleted(tasks.filter((task) => task.completed === false));
     setCompleted(tasks.filter((task) => task.completed === true));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tasks]);
+  }, [updatedCheck]);
 
   // File Level Event Handlers
   const handleInputChange = (e) => {
@@ -48,7 +50,7 @@ const File = (props) => {
   const handleAdd = (e) => {
     e.preventDefault();
     if (onTypeTask) {
-      const id = Math.floor(Math.random() * 100);
+      const id = Math.floor(Math.random() * 10000000000);
       const addedTask = { content: onTypeTask, id: id, completed: false };
       setTasks(tasks.concat(addedTask));
       setOnTypeTask("");
@@ -59,38 +61,48 @@ const File = (props) => {
   // Task Level Event Handlers
   const handleDelete = (e) => {
     const removedId = e.target.id;
+    console.log(removedId);
     // Handle for Completed and UnCompleted Tasks cases
     const newTasks = tasks.filter((task) => task.id !== +removedId);
     setTasks(newTasks);
+    setUpdatedCheck(!updatedCheck);
   };
 
   const handleCheck = (e) => {
-    const updatedTasks = [...tasks];
-    const checkedTask = updatedTasks.filter(
-      (task) => task.id === +e.target.id
-    )[0];
+    const checkedTask = tasks.filter((task) => task.id === +e.target.id)[0];
 
     // Change the value of completed
     checkedTask.completed = !checkedTask.completed;
+
+    setUpdatedCheck(!updatedCheck);
+  };
+
+  const handleTaskChange = (e) => {
+    const updatedTasks = [...tasks];
+    const edittedTask = updatedTasks.filter(
+      (task) => task.id === +e.target.id
+    )[0];
+    edittedTask.content = e.target.value;
     setTasks(updatedTasks);
   };
 
   const taskMethod = {
     handleDelete: handleDelete,
     handleCheck: handleCheck,
+    handleTaskChange: handleTaskChange,
   };
 
   return (
     <div className="fileMainPage">
       <h1>[Folder Name]</h1>
       <form>
-        <Editable placeholder="Enter a date">
-          <input
-            placeholder="Enter the task ..."
-            value={onTypeTask}
-            onChange={handleInputChange}
-          />
-        </Editable>
+        <input
+          className=""
+          placeholder="Enter the task ..."
+          value={onTypeTask}
+          onChange={handleInputChange}
+        />
+        <input className="" type="date" />
         <button onClick={handleAdd}>Add</button>
       </form>
       {/* Task Container */}

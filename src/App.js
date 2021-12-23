@@ -1,7 +1,7 @@
 import SideBar from "./Template/SideBar";
 import NavBar from "./Template/NavBar";
 import Folder from "./Components/Folder";
-import idGenerator from "./util/idGenerator";
+import idGenerator from "./utils/idGenerator";
 
 const App = () => {
   const folders = [
