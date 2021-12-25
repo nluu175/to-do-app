@@ -1,33 +1,34 @@
 import Task from "./Task";
 import "./File.css";
 import { useState, useEffect } from "react";
+import axios from "axios";
 
 const File = (props) => {
-  const initialTasks = [
-    {
-      content: "First",
-      id: 1,
-      createdDate: Date.now(),
-      completed: false,
-      dueDate: Date.now(),
-    },
-    {
-      content: "Second",
-      id: 2,
-      createdDate: Date.now(),
-      completed: true,
-      dueDate: Date.now(),
-    },
-    {
-      content: "Third",
-      id: 3,
-      createdDate: Date.now(),
-      completed: true,
-      dueDate: Date.now(),
-    },
-  ];
+  // const initialTasks = [
+  //   {
+  //     content: "First",
+  //     id: 1,
+  //     createdDate: Date.now(),
+  //     completed: false,
+  //     dueDate: Date.now(),
+  //   },
+  //   {
+  //     content: "Second",
+  //     id: 2,
+  //     createdDate: Date.now(),
+  //     completed: true,
+  //     dueDate: Date.now(),
+  //   },
+  //   {
+  //     content: "Third",
+  //     id: 3,
+  //     createdDate: Date.now(),
+  //     completed: true,
+  //     dueDate: Date.now(),
+  //   },
+  // ];
 
-  const [tasks, setTasks] = useState(initialTasks);
+  const [tasks, setTasks] = useState([]);
   const [onTypeTask, setOnTypeTask] = useState("");
   const [unCompleted, setUnCompleted] = useState([]);
   const [completed, setCompleted] = useState([]);
@@ -36,6 +37,11 @@ const File = (props) => {
   const [updatedCheck, setUpdatedCheck] = useState(true);
 
   useEffect(() => {
+    axios.get(`http://localhost:3001/tasks`).then((returnedTasks) => {
+      setTasks(returnedTasks.data);
+      console.log(returnedTasks.data);
+    });
+
     console.log("Tasks updated!");
     setUnCompleted(tasks.filter((task) => task.completed === false));
     setCompleted(tasks.filter((task) => task.completed === true));
