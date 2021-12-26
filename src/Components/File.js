@@ -1,133 +1,55 @@
-import Task from "./Task";
-import "./File.css";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Tasks from "./Tasks/Tasks";
+import AddParams from "./AddParams";
 
-const File = (props) => {
-  // const initialTasks = [
-  //   {
-  //     content: "First",
-  //     id: 1,
-  //     createdDate: Date.now(),
-  //     completed: false,
-  //     dueDate: Date.now(),
-  //   },
-  //   {
-  //     content: "Second",
-  //     id: 2,
-  //     createdDate: Date.now(),
-  //     completed: true,
-  //     dueDate: Date.now(),
-  //   },
-  //   {
-  //     content: "Third",
-  //     id: 3,
-  //     createdDate: Date.now(),
-  //     completed: true,
-  //     dueDate: Date.now(),
-  //   },
-  // ];
-
+// Folders contain files
+// File is a container that contains Tasks
+const File = ({ ...props }) => {
+  const [loading, setLoading] = useState(true);
   const [tasks, setTasks] = useState([]);
-  const [onTypeTask, setOnTypeTask] = useState("");
-  const [unCompleted, setUnCompleted] = useState([]);
-  const [completed, setCompleted] = useState([]);
-
-  // Use to control whether to update Completed List
-  const [updatedCheck, setUpdatedCheck] = useState(true);
 
   useEffect(() => {
-    axios.get(`http://localhost:3001/tasks`).then((returnedTasks) => {
-      setTasks(returnedTasks.data);
-      console.log(returnedTasks.data);
-    });
+    axios
+      .get("http://localhost:3001/tasks")
+      .then((response) => {
+        setTasks(response.data);
+      })
+      .catch((error) => {
+        console.log("Error fetching data: ", error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
-    console.log("Tasks updated!");
-    setUnCompleted(tasks.filter((task) => task.completed === false));
-    setCompleted(tasks.filter((task) => task.completed === true));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updatedCheck]);
-
-  // File Level Event Handlers
-  const handleInputChange = (e) => {
-    setOnTypeTask(e.target.value);
-  };
-
-  const handleAdd = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (onTypeTask) {
-      const id = Math.floor(Math.random() * 10000000000);
-      const addedTask = { content: onTypeTask, id: id, completed: false };
-      setTasks(tasks.concat(addedTask));
-      setOnTypeTask("");
-    }
-    console.log(tasks);
+    // console.log(e.target.dueDate.value);
+    const addedTask = {
+      content: e.target.content.value,
+      important: true,
+      completed: e.target.important.completed,
+    };
+
+    axios
+      .post("http://localhost:3001/tasks", addedTask)
+      .then((response) => {
+        setTasks(tasks.concat(response.data));
+        console.log("Submitted");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
-  // Task Level Event Handlers
-  const handleDelete = (e) => {
-    const removedId = e.target.id;
-    console.log(removedId);
-    // Handle for Completed and UnCompleted Tasks cases
-    const newTasks = tasks.filter((task) => task.id !== +removedId);
-    setTasks(newTasks);
-    setUpdatedCheck(!updatedCheck);
-  };
-
-  const handleCheck = (e) => {
-    const checkedTask = tasks.filter((task) => task.id === +e.target.id)[0];
-
-    // Change the value of completed
-    checkedTask.completed = !checkedTask.completed;
-
-    setUpdatedCheck(!updatedCheck);
-  };
-
-  const handleTaskChange = (e) => {
-    const updatedTasks = [...tasks];
-    const edittedTask = updatedTasks.filter(
-      (task) => task.id === +e.target.id
-    )[0];
-    edittedTask.content = e.target.value;
-    setTasks(updatedTasks);
-  };
-
-  const taskMethod = {
-    handleDelete: handleDelete,
-    handleCheck: handleCheck,
-    handleTaskChange: handleTaskChange,
-  };
+  if (loading) return "Fetching data! Please wait ...";
 
   return (
-    <div className="fileMainPage">
-      <h1>[Folder Name]</h1>
-      <form>
-        <input
-          className=""
-          placeholder="Enter the task ..."
-          value={onTypeTask}
-          onChange={handleInputChange}
-        />
-        <input className="" type="date" />
-        <button onClick={handleAdd}>Add</button>
-      </form>
-      {/* Task Container */}
-      <div className="taskContainer">
-        <ul>
-          {unCompleted.map((task) => (
-            <Task key={task.id} task={task} method={taskMethod} />
-          ))}
-        </ul>
-      </div>
-      {/* Completed Task */}
-      <h2>Completed</h2>
-      <div className="taskContainer">
-        <ul>
-          {completed.map((task) => (
-            <Task key={task.id} task={task} method={taskMethod} />
-          ))}
-        </ul>
-      </div>
+    <div className="container">
+      <h2>Todo List Name</h2>
+      <AddParams handleSubmit={handleSubmit} />
+      <Tasks tasks={tasks} />
     </div>
   );
 };
