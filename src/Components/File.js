@@ -43,13 +43,34 @@ const File = ({ ...props }) => {
       });
   };
 
+  const handleRemoveTask = (e) => {
+    console.log(e.target.id);
+    axios
+      .delete(`http://localhost:3001/tasks/${e.target.id}`)
+      .then((response) => {
+        console.log(response);
+        setTasks(tasks.filter((task) => task.id !== e.target.id));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const handleCompletedCheck = (e) => {
+    console.log(e.target.id);
+  };
+
   if (loading) return "Fetching data! Please wait ...";
 
   return (
     <div className="container">
       <h2>Todo List Name</h2>
       <AddParams handleSubmit={handleSubmit} />
-      <Tasks tasks={tasks} />
+      <Tasks
+        tasks={tasks}
+        handleRemoveTask={handleRemoveTask}
+        handleCompletedCheck={handleCompletedCheck}
+      />
     </div>
   );
 };
