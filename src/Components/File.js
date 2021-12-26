@@ -5,7 +5,7 @@ import AddParams from "./AddParams";
 
 // Folders contain files
 // File is a container that contains Tasks
-const File = ({ ...props }) => {
+const File = (props) => {
   const [loading, setLoading] = useState(true);
   const [tasks, setTasks] = useState([]);
 
@@ -25,11 +25,10 @@ const File = ({ ...props }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // console.log(e.target.dueDate.value);
     const addedTask = {
       content: e.target.content.value,
       important: true,
-      completed: e.target.important.completed,
+      completed: e.target.completed.checked,
     };
 
     axios
@@ -48,7 +47,7 @@ const File = ({ ...props }) => {
     axios
       .delete(`http://localhost:3001/tasks/${e.target.id}`)
       .then((response) => {
-        console.log(response);
+        console.log("Removed!");
         setTasks(tasks.filter((task) => task.id !== e.target.id));
       })
       .catch((error) => {
@@ -57,7 +56,24 @@ const File = ({ ...props }) => {
   };
 
   const handleCompletedCheck = (e) => {
-    console.log(e.target.id);
+    let copiedTasks = [...tasks];
+
+    const targetTask = copiedTasks.filter((task) => task.id === e.target.id)[0];
+    targetTask.completed = !targetTask.completed;
+
+    axios
+      .put(`http://localhost:3001/tasks/${e.target.id}`, {
+        completed: targetTask.completed,
+      })
+      .then((response) => {
+        console.log("Updated Completed!");
+
+        setTasks(
+          copiedTasks
+            .filter((task) => task.id !== e.target.id)
+            .concat(targetTask)
+        );
+      });
   };
 
   if (loading) return "Fetching data! Please wait ...";
