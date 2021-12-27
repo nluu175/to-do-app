@@ -26,7 +26,7 @@ const Tasks = (props) => {
           setShowCompleted(!showCompleted);
         }}
       >
-        {showCompleted ? "Show Completed" : "Hide Completed"}
+        {showCompleted ? "Hide Completed" : "Show Completed"}
       </button>
       {showCompleted ? (
         <ul>
