@@ -3,6 +3,12 @@
 ## Missing Functionalities
 
 - Sort list based on due date and importance
-- Add folders (Sidebar on the left)
+- Add files (list) (Sidebar on the left)
 - Highlight important task
-- Fix UI
+- Add Authentication
+- Fix UI:
+
+* Add container for (AddedParams) and (Tasks)
+* Add background color
+
+- Add discord compatibility
