@@ -1,6 +1,9 @@
 import { useState } from "react";
 import Task from "./Task";
-import "./Tasks.css";
+import { Button } from "@mui/material";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
 
 const Tasks = (props) => {
   const { tasks, handleRemoveTask, handleCompletedCheck } = props;
@@ -11,7 +14,7 @@ const Tasks = (props) => {
 
   return (
     <div>
-      <ul>
+      <List>
         {toShowTasks.map((task) => (
           <Task
             key={task.id}
@@ -20,16 +23,18 @@ const Tasks = (props) => {
             handleCompletedCheck={handleCompletedCheck}
           />
         ))}
-      </ul>
-      <button
+      </List>
+      <Button
         onClick={() => {
           setShowCompleted(!showCompleted);
         }}
+        variant="outlined"
+        size="small"
       >
         {showCompleted ? "Hide Completed" : "Show Completed"}
-      </button>
+      </Button>
       {showCompleted ? (
-        <ul>
+        <List>
           {completedTasks.map((task) => (
             <Task
               key={task.id}
@@ -38,7 +43,7 @@ const Tasks = (props) => {
               handleCompletedCheck={handleCompletedCheck}
             />
           ))}
-        </ul>
+        </List>
       ) : null}
     </div>
   );

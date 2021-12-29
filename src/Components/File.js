@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Tasks from "./Tasks/Tasks";
 import AddParams from "./AddParams";
+import Typography from "@mui/material/Typography";
 
 // Folders contain files
 // File is a container that contains Tasks
@@ -25,25 +26,28 @@ const File = (props) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const addedTask = {
-      content: e.target.content.value,
-      important: true,
-      completed: e.target.completed.checked,
-    };
+    if (e.target.content.value) {
+      const addedTask = {
+        content: e.target.content.value,
+        dueDate: e.target.dueDate.value,
+        important: e.target.important.checked,
+        completed: false,
+      };
 
-    axios
-      .post("http://localhost:3001/tasks", addedTask)
-      .then((response) => {
-        setTasks(tasks.concat(response.data));
-        console.log("Submitted");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      axios
+        .post("http://localhost:3001/tasks", addedTask)
+        .then((response) => {
+          setTasks(tasks.concat(response.data));
+          console.log("Submitted");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+    return;
   };
 
   const handleRemoveTask = (e) => {
-    console.log(e.target.id);
     axios
       .delete(`http://localhost:3001/tasks/${e.target.id}`)
       .then((response) => {
@@ -80,7 +84,9 @@ const File = (props) => {
 
   return (
     <div className="container">
-      <h2>Todo List Name</h2>
+      <Typography variant="h2" component="h2">
+        [Placeholder for List Name]
+      </Typography>
       <AddParams handleSubmit={handleSubmit} />
       <Tasks
         tasks={tasks}
