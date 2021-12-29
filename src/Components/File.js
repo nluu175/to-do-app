@@ -1,57 +1,98 @@
-import Task from "./Task";
-import Completed from "./Completed";
-import "./File.css";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import Tasks from "./Tasks/Tasks";
+import AddParams from "./AddParams";
+import Typography from "@mui/material/Typography";
 
+// Folders contain files
+// File is a container that contains Tasks
 const File = (props) => {
-  const today = new Date();
-  const initialTasks = [
-    { content: "First", id: 1, createdDate: Date.now() },
-    { content: "Second", id: 2, createdDate: Date.now() },
-  ];
+  const [loading, setLoading] = useState(true);
+  const [tasks, setTasks] = useState([]);
 
-  const [tasks, setTasks] = useState(initialTasks);
-  const [onTypeTask, setOnTypeTask] = useState("");
+  useEffect(() => {
+    axios
+      .get("http://localhost:3001/tasks")
+      .then((response) => {
+        setTasks(response.data);
+      })
+      .catch((error) => {
+        console.log("Error fetching data: ", error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
-  const handleInputChange = (e) => {
-    setOnTypeTask(e.target.value);
-  };
-
-  const handleAdd = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (onTypeTask) {
-      const addedTask = { content: onTypeTask, id: tasks.length + 1 };
-      setTasks(tasks.concat(addedTask));
-      setOnTypeTask("");
+    if (e.target.content.value) {
+      const addedTask = {
+        content: e.target.content.value,
+        dueDate: e.target.dueDate.value,
+        important: e.target.important.checked,
+        completed: false,
+      };
+
+      axios
+        .post("http://localhost:3001/tasks", addedTask)
+        .then((response) => {
+          setTasks(tasks.concat(response.data));
+          console.log("Submitted");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
+    return;
   };
 
-  const handleDelete = (e) => {
-    const removedId = e.target.id;
-    const newTasks = tasks.filter((task) => task.id !== +removedId);
-    setTasks(newTasks);
+  const handleRemoveTask = (e) => {
+    axios
+      .delete(`http://localhost:3001/tasks/${e.target.id}`)
+      .then((response) => {
+        console.log("Removed!");
+        setTasks(tasks.filter((task) => task.id !== e.target.id));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
+
+  const handleCompletedCheck = (e) => {
+    let copiedTasks = [...tasks];
+
+    const targetTask = copiedTasks.filter((task) => task.id === e.target.id)[0];
+    targetTask.completed = !targetTask.completed;
+
+    axios
+      .put(`http://localhost:3001/tasks/${e.target.id}`, {
+        completed: targetTask.completed,
+      })
+      .then((response) => {
+        console.log("Updated Completed!");
+
+        setTasks(
+          copiedTasks
+            .filter((task) => task.id !== e.target.id)
+            .concat(targetTask)
+        );
+      });
+  };
+
+  if (loading) return "Fetching data! Please wait ...";
 
   return (
-    <div className="fileMainPage">
-      <form>
-        <input
-          placeholder="Enter the task ..."
-          value={onTypeTask}
-          onChange={handleInputChange}
-        />
-        <button onClick={handleAdd}>Add</button>
-      </form>
-      {/* Task Container */}
-      <div className="taskContainer">
-        <ul>
-          {tasks.map((task) => (
-            <Task task={task} handleDelete={handleDelete} />
-          ))}
-        </ul>
-      </div>
-      {/* Completed Task */}
-      <Completed />
+    <div className="container">
+      <Typography variant="h2" component="h2">
+        [Placeholder for List Name]
+      </Typography>
+      <AddParams handleSubmit={handleSubmit} />
+      <Tasks
+        tasks={tasks}
+        handleRemoveTask={handleRemoveTask}
+        handleCompletedCheck={handleCompletedCheck}
+      />
     </div>
   );
 };

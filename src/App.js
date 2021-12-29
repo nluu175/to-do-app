@@ -1,15 +1,9 @@
-import SideBar from "./Template/SideBar";
-import NavBar from "./Template/NavBar";
-import Folder from "./Components/Folder";
+import File from "./components/File";
 
-const handleDelete = (e) => {};
-
-const App = () => {
+const App = (props) => {
   return (
     <div>
-      <NavBar />
-      <SideBar userId={123} />
-      <Folder />
+      <File />
     </div>
   );
 };
